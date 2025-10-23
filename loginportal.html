@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login Portal</title>
+    <style>
+        body { font-family: Arial, sans-serif; background:#f5f7fb; margin:0; padding:40px; display:flex; align-items:center; justify-content:center; height:100vh; }
+        .card { background:#fff; padding:24px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,.08); width:360px; }
+        h2 { margin:0 0 16px 0; font-size:20px; }
+        label { display:block; margin:12px 0 6px; font-size:13px; color:#333; }
+        input, select, button { width:100%; padding:10px 12px; border:1px solid #d0d7df; border-radius:6px; font-size:14px; box-sizing:border-box; }
+        .hint { font-size:12px; color:#666; margin-top:6px; }
+        .hidden { display:none; }
+        .actions { margin-top:16px; display:flex; gap:8px; }
+        .btn { cursor:pointer; background:#0b63d3; color:#fff; border:none; }
+        .btn.secondary { background:#e6eefc; color:#0b63d3; border:1px solid #cfe0fb; }
+    </style>
+</head>
+<body>
+    <div class="card" role="region" aria-labelledby="portalTitle">
+        <h2 id="portalTitle">Login Portal</h2>
+
+        <label for="roleSelect">Select role</label>
+        <select id="roleSelect" aria-describedby="roleHint">
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+        </select>
+        <div id="roleHint" class="hint">Choose "Admin" for admin login (User ID + password). Choose "User" for college email login.</div>
+
+        <form id="loginForm" novalidate>
+            <div id="adminFields">
+                <label for="adminId">User ID</label>
+                <input id="adminId" name="adminId" type="text" autocomplete="username" placeholder="Enter admin user id" required />
+
+                <label for="adminPassword">Password</label>
+                <input id="adminPassword" name="adminPassword" type="password" autocomplete="current-password" placeholder="Enter password" required />
+            </div>
+
+            <div id="userFields" class="hidden">
+                <label for="userEmail">College Email</label>
+                <input id="userEmail" name="userEmail" type="email" autocomplete="username" placeholder="you@college.edu" required />
+                <div class="hint">Use your college email address (e.g., you@college.edu).</div>
+
+                <label for="userPassword">Password</label>
+                <input id="userPassword" name="userPassword" type="password" autocomplete="current-password" placeholder="Enter password" required />
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn">Sign in</button>
+                <button type="reset" class="btn secondary">Reset</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        (function () {
+            const roleSelect = document.getElementById('roleSelect');
+            const adminFields = document.getElementById('adminFields');
+            const userFields = document.getElementById('userFields');
+            const form = document.getElementById('loginForm');
+
+            function updateView() {
+                if (roleSelect.value === 'admin') {
+                    adminFields.classList.remove('hidden');
+                    userFields.classList.add('hidden');
+                    // set required attributes appropriately
+                    document.getElementById('adminId').required = true;
+                    document.getElementById('adminPassword').required = true;
+                    document.getElementById('userEmail').required = false;
+                    document.getElementById('userPassword').required = false;
+                } else {
+                    adminFields.classList.add('hidden');
+                    userFields.classList.remove('hidden');
+                    document.getElementById('adminId').required = false;
+                    document.getElementById('adminPassword').required = false;
+                    document.getElementById('userEmail').required = true;
+                    document.getElementById('userPassword').required = true;
+                }
+            }
+
+            roleSelect.addEventListener('change', updateView);
+            updateView();
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const role = roleSelect.value;
+
+                if (role === 'admin') {
+                    const id = document.getElementById('adminId').value.trim();
+                    const pw = document.getElementById('adminPassword').value;
+                    if (!id || !pw) { alert('Please enter admin user id and password.'); return; }
+                    // Replace with real authentication call
+                    console.log('Attempt admin login:', { id });
+                    alert('Submitting admin login for user id: ' + id);
+                } else {
+                    const email = document.getElementById('userEmail').value.trim();
+                    const pw = document.getElementById('userPassword').value;
+                    if (!email || !pw) { alert('Please enter college email and password.'); return; }
+                    // Basic college-email hint check (optional)
+                    if (!/\.edu$/i.test(email)) {
+                        if (!confirm('Email does not end with .edu. Continue?')) return;
+                    }
+                    // Replace with real authentication call
+                    console.log('Attempt user login:', { email });
+                    alert('Submitting user login for email: ' + email);
+                }
+
+                // clear password fields after "submission" for safety
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('userPassword').value = '';
+            });
+        })();
+    </script>
+</body>
+</html>
