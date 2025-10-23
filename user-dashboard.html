@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background: #f5f7fb;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0b63d3;
+            color: white;
+            padding: 20px;
+            margin: -20px -20px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .welcome { 
+            font-size: 24px; 
+            margin-bottom: 20px; 
+        }
+        .post-form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .image-preview {
+            max-width: 100%;
+            margin-top: 10px;
+            display: none;
+        }
+        .submit-btn {
+            background: #0b63d3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background: #0951af;
+        }
+        .posts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .post-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .post-details {
+            padding: 15px;
+        }
+        .post-meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .filters {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        .post-actions {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            text-align: right;
+        }
+        .logout-btn {
+            background: white;
+            color: #0b63d3;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>User Dashboard</h1>
+        <button onclick="handleLogout()" class="logout-btn">Logout</button>
+    </div>
+    <div class="welcome">Welcome, Student!</div>
+
+    <div class="post-form">
+        <h2>Create New Post</h2>
+        <form id="postForm">
+            <div class="form-group">
+                <label for="imageUpload">Upload Image</label>
+                <input type="file" id="imageUpload" accept="image/*" required>
+                <img id="imagePreview" class="image-preview">
+            </div>
+
+            <div class="form-group">
+                <label for="itemType">Item Type</label>
+                <select id="itemType" required>
+                    <option value="">Select Type</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="books">Books</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="personal">Personal Belongings</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" required placeholder="Enter location">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" rows="3" required placeholder="Describe your item..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Post</button>
+        </form>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+        <label>
+            Filter by:
+            <select id="filterType">
+                <option value="">All Types</option>
+                <option value="electronics">Electronics</option>
+                <option value="books">Books</option>
+                <option value="clothing">Clothing</option>
+                <option value="accessories">Accessories</option>
+                <option value="personal">Personal Belongings</option>
+                <option value="other">Other</option>
+            </select>
+        </label>
+
+        <label>
+            Location:
+            <input type="text" id="filterLocation" placeholder="Filter by location">
+        </label>
+
+        <label>
+            Date:
+            <input type="date" id="filterDate">
+        </label>
+    </div>
+
+    <!-- Posts Container -->
+    <div class="posts-container" id="postsContainer">
+        <!-- Posts will be added here dynamically -->
+    </div>
+
+    <script>
+        // Preview image before upload
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const preview = document.getElementById('imagePreview');
+            const file = e.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('postForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const post = {
+                image: document.getElementById('imagePreview').src,
+                itemType: document.getElementById('itemType').value,
+                location: document.getElementById('location').value,
+                description: document.getElementById('description').value,
+                date: new Date().toISOString(),
+            };
+
+            // Store post in localStorage
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            posts.push(post);
+            localStorage.setItem('posts', JSON.stringify(posts));
+
+            // Reset form
+            this.reset();
+            document.getElementById('imagePreview').style.display = 'none';
+            
+            // Refresh posts display
+            displayPosts();
+        });
+
+        // Delete post function
+        function deletePost(index) {
+            if (confirm('Are you sure you want to delete this post?')) {
+                const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+                posts.splice(index, 1);
+                localStorage.setItem('posts', JSON.stringify(posts));
+                displayPosts();
+            }
+        }
+
+        // Display posts
+        function displayPosts() {
+            const container = document.getElementById('postsContainer');
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            const filterType = document.getElementById('filterType').value;
+            const filterLocation = document.getElementById('filterLocation').value.toLowerCase();
+            const filterDate = document.getElementById('filterDate').value;
+
+            // Filter posts
+            const filteredPosts = posts.filter(post => {
+                const matchesType = !filterType || post.itemType === filterType;
+                const matchesLocation = !filterLocation || post.location.toLowerCase().includes(filterLocation);
+                const matchesDate = !filterDate || post.date.startsWith(filterDate);
+                return matchesType && matchesLocation && matchesDate;
+            });
+
+            // Clear container
+            container.innerHTML = '';
+
+            // Add filtered posts
+            filteredPosts.forEach((post, index) => {
+                const postElement = document.createElement('div');
+                postElement.className = 'post-card';
+                postElement.innerHTML = `
+                    <img src="${post.image}" class="post-image" alt="${post.itemType}">
+                    <div class="post-details">
+                        <div class="post-meta">
+                            <strong>${post.itemType}</strong> • ${post.location}<br>
+                            ${new Date(post.date).toLocaleDateString()}
+                        </div>
+                        <p>${post.description}</p>
+                    </div>
+                    <div class="post-actions">
+                        <button onclick="deletePost(${index})" class="delete-btn">Delete Post</button>
+                    </div>
+                `;
+                container.appendChild(postElement);
+            });
+        }
+
+        // Add filter event listeners
+        document.getElementById('filterType').addEventListener('change', displayPosts);
+        document.getElementById('filterLocation').addEventListener('input', displayPosts);
+        document.getElementById('filterDate').addEventListener('change', displayPosts);
+
+        // Initial display
+        displayPosts();
+
+        // Logout function
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear any stored session data
+                localStorage.removeItem('currentUser');
+                sessionStorage.clear();
+                
+                // Redirect to login portal
+                window.location.href = 'loginportal.html';
+            }
+        }
+
+        // Authentication check
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = 'loginportal.html';
+            }
+        }
+
+        // Check auth on page load
+        checkAuth();
+    </script>
+</body>
+</html>

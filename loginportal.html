@@ -91,24 +91,30 @@
                 if (role === 'admin') {
                     const id = document.getElementById('adminId').value.trim();
                     const pw = document.getElementById('adminPassword').value;
-                    if (!id || !pw) { alert('Please enter admin user id and password.'); return; }
-                    // Replace with real authentication call
-                    console.log('Attempt admin login:', { id });
-                    alert('Submitting admin login for user id: ' + id);
+                    if (!id || !pw) { 
+                        alert('Please enter admin user id and password.'); 
+                        return; 
+                    }
+                    // Set login state
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('userRole', 'admin');
+                    sessionStorage.setItem('userId', id);
+                    window.location.href = 'admin-dashboard.html';
                 } else {
                     const email = document.getElementById('userEmail').value.trim();
                     const pw = document.getElementById('userPassword').value;
-                    if (!email || !pw) { alert('Please enter college email and password.'); return; }
-                    // Basic college-email hint check (optional)
-                    if (!/\.edu$/i.test(email)) {
-                        if (!confirm('Email does not end with .edu. Continue?')) return;
+                    if (!email || !pw) { 
+                        alert('Please enter college email and password.'); 
+                        return; 
                     }
-                    // Replace with real authentication call
-                    console.log('Attempt user login:', { email });
-                    alert('Submitting user login for email: ' + email);
+                    // Set login state
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('userRole', 'user');
+                    sessionStorage.setItem('userEmail', email);
+                    window.location.href = 'user-dashboard.html';
                 }
 
-                // clear password fields after "submission" for safety
+                // Clear password fields for security
                 document.getElementById('adminPassword').value = '';
                 document.getElementById('userPassword').value = '';
             });
