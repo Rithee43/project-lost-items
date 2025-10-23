@@ -51,6 +51,9 @@
                 <button type="reset" class="btn secondary">Reset</button>
             </div>
         </form>
+        <p style="text-align: center; margin-top: 16px; font-size: 14px;">
+            Don't have an account? <a href="register.html" style="color: #0b63d3; text-decoration: none;">Register here</a>
+        </p>
     </div>
 
     <script>
@@ -64,7 +67,6 @@
                 if (roleSelect.value === 'admin') {
                     adminFields.classList.remove('hidden');
                     userFields.classList.add('hidden');
-                    // set required attributes appropriately
                     document.getElementById('adminId').required = true;
                     document.getElementById('adminPassword').required = true;
                     document.getElementById('userEmail').required = false;

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Registration</title>
+    <style>
+        body { font-family: Arial, sans-serif; background:#f5f7fb; margin:0; padding:40px; display:flex; align-items:center; justify-content:center; height:100vh; }
+        .card { background:#fff; padding:24px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,.08); width:360px; }
+        h2 { margin:0 0 16px 0; font-size:20px; }
+        label { display:block; margin:12px 0 6px; font-size:13px; color:#333; }
+        input, select, button { width:100%; padding:10px 12px; border:1px solid #d0d7df; border-radius:6px; font-size:14px; box-sizing:border-box; }
+        .hint { font-size:12px; color:#666; margin-top:6px; }
+        .hidden { display:none; }
+        .actions { margin-top:16px; display:flex; gap:8px; }
+        .btn { cursor:pointer; background:#0b63d3; color:#fff; border:none; }
+        .btn.secondary { background:#e6eefc; color:#0b63d3; border:1px solid #cfe0fb; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <center><h2>Register your account</h2></center>
+        
+        <label for="roleSelect">Select role</label>
+        <select id="roleSelect">
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+        </select>
+
+        <form id="registerForm" novalidate>
+            <div id="adminFields">
+                <label for="adminName">Full Name</label>
+                <input id="adminName" name="adminName" type="text" required placeholder="Enter your full name" />
+
+                <label for="adminId">User ID</label>
+                <input id="adminId" name="adminId" type="text" required placeholder="Create admin user id" />
+
+                <label for="adminEmail">Email</label>
+                <input id="adminEmail" name="adminEmail" type="email" required placeholder="Enter your email" />
+
+                <label for="adminPassword">Password</label>
+                <input id="adminPassword" name="adminPassword" type="password" required placeholder="Create password" />
+
+                <label for="adminConfirmPassword">Confirm Password</label>
+                <input id="adminConfirmPassword" name="adminConfirmPassword" type="password" required placeholder="Confirm password" />
+            </div>
+
+            <div id="userFields" class="hidden">
+                <label for="userName">Full Name</label>
+                <input id="userName" name="userName" type="text" required placeholder="Enter your full name" />
+
+                <label for="userEmail">College Email</label>
+                <input id="userEmail" name="userEmail" type="email" required placeholder="you@college.edu" />
+                <div class="hint">Use your college email address (e.g., you@college.edu).</div>
+
+                <label for="userPassword">Password</label>
+                <input id="userPassword" name="userPassword" type="password" required placeholder="Create password" />
+
+                <label for="userConfirmPassword">Confirm Password</label>
+                <input id="userConfirmPassword" name="userConfirmPassword" type="password" required placeholder="Confirm password" />
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn">Register</button>
+                <button type="reset" class="btn secondary">Reset</button>
+            </div>
+        </form>
+
+        <p style="text-align: center; margin-top: 16px; font-size: 14px;">
+            Already have an account? <a href="loginportal.html" style="color: #0b63d3; text-decoration: none;">Login here</a>
+        </p>
+    </div>
+
+    <script>
+        (function() {
+            const roleSelect = document.getElementById('roleSelect');
+            const adminFields = document.getElementById('adminFields');
+            const userFields = document.getElementById('userFields');
+            const form = document.getElementById('registerForm');
+
+            function updateView() {
+                if (roleSelect.value === 'admin') {
+                    adminFields.classList.remove('hidden');
+                    userFields.classList.add('hidden');
+                } else {
+                    adminFields.classList.add('hidden');
+                    userFields.classList.remove('hidden');
+                }
+            }
+
+            roleSelect.addEventListener('change', updateView);
+            updateView();
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const role = roleSelect.value;
+
+                if (role === 'admin') {
+                    const name = document.getElementById('adminName').value.trim();
+                    const id = document.getElementById('adminId').value.trim();
+                    const email = document.getElementById('adminEmail').value.trim();
+                    const pw = document.getElementById('adminPassword').value;
+                    const confirmPw = document.getElementById('adminConfirmPassword').value;
+
+                    if (!name || !id || !email || !pw || !confirmPw) {
+                        alert('Please fill in all fields.');
+                        return;
+                    }
+                    if (pw !== confirmPw) {
+                        alert('Passwords do not match.');
+                        return;
+                    }
+                    // Replace with real registration call
+                    console.log('Admin registration:', { name, id, email });
+                    alert('Admin registration submitted successfully!');
+                    window.location.href = 'loginportal.html';
+                } else {
+                    const name = document.getElementById('userName').value.trim();
+                    const email = document.getElementById('userEmail').value.trim();
+                    const pw = document.getElementById('userPassword').value;
+                    const confirmPw = document.getElementById('userConfirmPassword').value;
+
+                    if (!name || !email || !pw || !confirmPw) {
+                        alert('Please fill in all fields.');
+                        return;
+                    }
+                    if (pw !== confirmPw) {
+                        alert('Passwords do not match.');
+                        return;
+                    }
+                    if (!/\.edu$/i.test(email)) {
+                        if (!confirm('Email does not end with .edu. Continue?')) return;
+                    }
+                    // Replace with real registration call
+                    console.log('User registration:', { name, email });
+                    alert('User registration submitted successfully!');
+                    window.location.href = 'loginportal.html';
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
